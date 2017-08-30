@@ -1,14 +1,17 @@
 CXX=clang++ -std=c++14 -g -O3
 CC=clang
-OBJS=lang.o
 
-parens: $(OBJS)
+.PHONY: all
 
-plus: $(OBJS)
+all: parens plus pal
 
-pal: $(OBJS)
+parens:
+
+plus:
+
+pal:
 
 .PHONY: clean
 
 clean:
-	rm $(OBJS)
+	rm parens plus pal

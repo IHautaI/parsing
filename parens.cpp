@@ -14,7 +14,7 @@ auto print(const std::string& s, std::shared_ptr<Node>& x)
 }
 
 
-auto run(const std::initializer_list<std::pair<char, int>>& lst,
+auto run(const std::initializer_list<std::pair<int, std::string>>& lst,
          std::shared_ptr<Node>& lang)
          -> void
 {
@@ -22,7 +22,7 @@ auto run(const std::initializer_list<std::pair<char, int>>& lst,
   auto x = lang;
   for(auto& c : lst)
   {
-    x = x->deriv(c.second);
+    x = x->deriv(c);
     ss << c.first;
     print(ss.str(), x);
   }
@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 
   std::cout << "\n";
 
-  auto uno = std::make_pair('(', 2);
-  auto dos = std::make_pair(')', 3);
+  auto uno = std::make_pair(2, "(");
+  auto dos = std::make_pair(3, ")");
 
   run({uno, dos, dos, dos}, lang);
 

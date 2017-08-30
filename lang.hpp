@@ -25,7 +25,7 @@ class Node
 public:
   int type;
 
-  virtual auto deriv(int i) -> std::shared_ptr<Node> = 0;
+  virtual auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node> = 0;
   virtual auto null() -> bool = 0;
   virtual auto cull(std::shared_ptr<Node>& x) -> bool = 0;
 
@@ -42,7 +42,15 @@ class token_t : public Node
 {
   bool nullable;
 public:
-  auto deriv(int i) -> std::shared_ptr<Node>;
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    if( type == 0 || type == 1 || type != i.first )
+    {
+      return make_node<token_t>(0);
+    }
+
+    return make_node<token_t>(1);
+  }
 
   auto null() -> bool {
     return nullable;
@@ -69,13 +77,24 @@ class node_expr : public Node
 {
   std::shared_ptr<Node> left;
   std::shared_ptr<Node> obj;
-  int wrt;
+  std::pair<int, std::string> wrt;
   bool resolved;
   bool culled;
 
 public:
-  auto eval() -> void;
-  auto deriv(int i) -> std::shared_ptr<Node>;
+  auto eval() -> void
+  {
+    obj = left->deriv(wrt);
+  }
+
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    if( !resolved )
+    {
+      eval();
+    }
+    return obj->deriv(i);
+  }
 
   auto null() -> bool
   {
@@ -108,7 +127,7 @@ public:
   }
 
 
-  node_expr(const std::shared_ptr<Node>& left, int i)
+  node_expr(const std::shared_ptr<Node>& left, const std::pair<int, std::string>& i)
   : Node(-5)
   , left(left)
   , wrt(i)
@@ -123,12 +142,20 @@ class nonterm_t : public Node {
   bool done;
   bool culled;
 
-  std::pair<int, std::shared_ptr<Node>> last;
+  std::pair<std::pair<int, std::string>, std::shared_ptr<Node>> last;
 
 public:
   std::shared_ptr<Node> left;
 
-  auto deriv(int i) -> std::shared_ptr<Node>;
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    if( last.first.first != i.first ){
+      last = std::make_pair(i, make_node<nonterm_t>(make_node<node_expr>(left,
+                                                                         i)));
+    }
+
+    return last.second;
+  }
 
   auto null() -> bool
   {
@@ -179,44 +206,17 @@ public:
 };
 
 
-class cat_t : public Node
-{
-  std::shared_ptr<Node> left;
-  std::shared_ptr<Node> right;
-public:
-  auto deriv(int i) -> std::shared_ptr<Node>;
-
-  auto null() -> bool
-  {
-    return left->null() && right->null();
-  }
-
-  auto cull(std::shared_ptr<Node>& x) -> bool
-  {
-    if( left->cull(left) || right->cull(right) )
-    {
-      x.reset();
-      return true;
-    }
-    return false;
-  }
-
-
-  cat_t(const std::shared_ptr<Node>& l,
-        const std::shared_ptr<Node>& r)
-  : Node(-3)
-  , left(l)
-  , right(r)
-  {}
-};
-
-
 class or_t : public Node
 {
   std::shared_ptr<Node> left;
   std::shared_ptr<Node> right;
 public:
-  auto deriv(int i) -> std::shared_ptr<Node>;
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    return make_node<or_t>(make_node<node_expr>(left, i),
+                           make_node<node_expr>(right, i));
+  }
+
   auto null() -> bool {
     return left->null() || right->null();
   }
@@ -254,10 +254,58 @@ public:
 };
 
 
+class cat_t : public Node
+{
+  std::shared_ptr<Node> left;
+  std::shared_ptr<Node> right;
+public:
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    if( left->null() )
+    {
+      return make_node<or_t>(
+                make_node<cat_t>(make_node<node_expr>(left, i), right),
+                make_node<node_expr>(right, i));
+    }
+
+    return make_node<cat_t>(make_node<node_expr>(left, i), right);
+  }
+
+  auto null() -> bool
+  {
+    return left->null() && right->null();
+  }
+
+  auto cull(std::shared_ptr<Node>& x) -> bool
+  {
+    if( left->cull(left) || right->cull(right) )
+    {
+      x.reset();
+      return true;
+    }
+    return false;
+  }
+
+
+  cat_t(const std::shared_ptr<Node>& l,
+        const std::shared_ptr<Node>& r)
+  : Node(-3)
+  , left(l)
+  , right(r)
+  {}
+};
+
+
 class star_t : public Node {
   std::shared_ptr<Node> left;
 public:
-  auto deriv(int i) -> std::shared_ptr<Node>;
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<Node>
+  {
+    return make_node<cat_t>(make_node<node_expr>(left, i),
+                            std::shared_ptr<Node>(
+                              dynamic_cast<Node*>(this)));
+  }
+
   auto null() -> bool {
     return true;
   }
