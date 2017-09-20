@@ -3,7 +3,7 @@
 
 using namespace lang;
 
-auto print(const std::string& s, std::shared_ptr<Node>& x)
+auto print(const std::string& s, std::shared_ptr<node_t>& x)
 {
   for(auto& x : s)
   {
@@ -16,7 +16,7 @@ auto print(const std::string& s, std::shared_ptr<Node>& x)
 
 
 auto run(const std::initializer_list<std::pair<int, std::string>>& lst,
-         std::shared_ptr<Node>& lang)
+         std::shared_ptr<node_t>& lang)
          -> void
 {
   std::stringstream ss;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
   auto top = make_nodes<or_t>(left, right, zero, one, eps);
 
-  dynamic_cast<nonterm_t*>(lang.get())->left = top;
+  static_cast<nonterm_t*>(lang->self())->left = top;
   // L = '0' L '0' | '1' L '1' | '0' | '1' | e
 
   std::cout << "\n";
