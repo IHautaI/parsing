@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   auto inner = make_nodes<cat_t>(lang, plus, lang);
   auto top   = make_node<or_t>(inner, one);
 
-  static_cast<nonterm_t*>(lang->self())->left = top;
+  lang->as<nonterm_t>().left = top;
   // L = L '+' L | '1'
 
   std::cout << "\n";

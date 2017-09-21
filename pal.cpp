@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
   auto top = make_nodes<or_t>(left, right, zero, one, eps);
 
-  static_cast<nonterm_t*>(lang->self())->left = top;
+  lang->as<nonterm_t>().left = top;
   // L = '0' L '0' | '1' L '1' | '0' | '1' | e
 
   std::cout << "\n";

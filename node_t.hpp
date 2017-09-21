@@ -232,9 +232,10 @@ public:
     }
   }
 
-  auto self() -> void*
+  template<typename T>
+  auto as() -> T&
   {
-    return node.get();
+    return *static_cast<T*>(node.get());
   }
 
   template<typename T>
