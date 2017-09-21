@@ -70,6 +70,7 @@ public:
 
 
 class node_expr;
+class accept_t;
 class token_t;
 class or_t;
 class cat_t;
@@ -79,6 +80,7 @@ class nonterm_t;
 enum class tag_t
 {
   Expr,
+  Accept,
   Token,
   And,
   Or,
@@ -112,6 +114,9 @@ public:
         break;
       case tag_t::NonTerm:
         delete static_cast<nonterm_t*>(x);
+        break;
+      case tag_t::Accept:
+        delete static_cast<accept_t*>(x);
         break;
     }
   }
@@ -154,6 +159,9 @@ public:
       case tag_t::NonTerm:
         return static_cast<Node<nonterm_t>*>(node.get())->deriv(i);
         break;
+      case tag_t::Accept:
+        return static_cast<Node<accept_t>*>(node.get())->deriv(i);
+        break;
     }
   }
 
@@ -179,6 +187,8 @@ public:
       case tag_t::NonTerm:
         return static_cast<Node<nonterm_t>*>(node.get())->null();
         break;
+      case tag_t::Accept:
+        return static_cast<Node<accept_t>*>(node.get())->null();
     }
   }
 
@@ -204,6 +214,9 @@ public:
       case tag_t::NonTerm:
         return static_cast<Node<nonterm_t>*>(node.get())->cull(x);
         break;
+      case tag_t::Accept:
+        return static_cast<Node<accept_t>*>(node.get())->cull(x);
+        break;
     }
   }
 
@@ -228,6 +241,9 @@ public:
         break;
       case tag_t::NonTerm:
         return static_cast<Node<nonterm_t>*>(node.get())->type();
+        break;
+      case tag_t::Accept:
+        return static_cast<Node<accept_t>*>(node.get())->type();
         break;
     }
   }
@@ -288,6 +304,12 @@ template<>
 struct get_tag<nonterm_t>
 {
   tag_t tag = tag_t::NonTerm;
+};
+
+template<>
+struct get_tag<accept_t>
+{
+  tag_t tag = tag_t::Accept;
 };
 
 }

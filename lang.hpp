@@ -43,6 +43,36 @@ template<typename T, typename... Args>
 auto make_node(Args&&... args) -> std::shared_ptr<node_t>;
 
 
+class accept_t : public Node<accept_t>
+{
+  std::string value;
+
+public:
+
+  auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<node_t>
+  {
+    return make_node<token_t>(0);
+  }
+
+  auto null() -> bool
+  {
+    return false;
+  }
+
+  auto cull(std::shared_ptr<node_t>& x) -> bool
+  {
+    return false;
+  }
+
+  accept_t(const std::string& value)
+  : Node(-6, true)
+  , value(value)
+  {}
+
+  ~accept_t(){}
+};
+
+
 class token_t : public Node<token_t>
 {
 public:
@@ -54,7 +84,7 @@ public:
       return make_node<token_t>(0);
     }
 
-    return make_node<token_t>(1);
+    return make_node<accept_t>(i.second);
   }
 
   auto null() -> bool
