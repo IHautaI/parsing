@@ -14,7 +14,7 @@ plus ->  L = L + L | 1
 
 
 # todo
-* small DSL for simplified language creation
 * Parser class - holds shared_ptr to created language,
     takes incoming tokens and applies derivative,
     creates parse tree(s)
+* small DSL for simplified language creation
