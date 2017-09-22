@@ -21,11 +21,12 @@ int main(int argc, char* argv[])
   auto uno = std::make_pair(2, "(");
   auto dos = std::make_pair(3, ")");
 
-  run({uno, dos, dos, dos}, lang);
+  // run({uno, dos, dos, dos}, lang);
 
-  std::cout << "\n\n----------\n\n";
+  // std::cout << "\n\n----------\n\n";
 
-  run({uno, uno, dos, uno, dos, dos}, lang);
+  // run({uno, uno, dos, uno, dos, dos}, lang);
+  run({uno, dos}, lang);
 
   return 0;
 }
