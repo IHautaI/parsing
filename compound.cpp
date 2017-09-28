@@ -58,28 +58,29 @@ namespace lang {
 
   auto or_t::deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<node_t>
   {
-    return make_node<or_t>(make_node<node_expr>(left, i),
+    return make_node<or_t>(make_node<node_expr>(left,  i),
                            make_node<node_expr>(right, i));
   }
 
 
   auto cat_t::deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<node_t>
   {
-    auto a = make_node<cat_t>(make_node<node_expr>(left, i), right);
+    auto a = make_node<node_expr>(left,  i);
+    auto b = make_node<node_expr>(right, i);
 
     if( left->null() )
     {
-      if( left->type() == -6 ) // eps x -> eps x'
+      if( left->type() == -6 )         // (accept x) -> (accept x')
       {
-        return make_node<cat_t>(left, make_node<node_expr>(right, i));
+        return make_node<cat_t>(left, b);
 
-      } else // (a b) -> a' b | b'
+      } else                           // (a b) -> ( (a' b) | (b') )
       {
-        return make_node<or_t>(a, make_node<node_expr>(right, i));
+        return make_node<or_t>(make_node<cat_t>(a, right), b);
       }
     }
 
-    return a; // a b -> a' b
+    return make_node<cat_t>(a, right); // (a b) -> (a' b)
   }
 
 

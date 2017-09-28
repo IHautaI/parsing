@@ -34,33 +34,6 @@ namespace lang {
     ~S_node(){}
   };
 
-
-/*
-*  main node interface
-*  CRTP class
-*/
-
-class Node
-{
-public:
-
-  int _type;
-  bool nullable;
-
-  auto type() -> int
-  {
-    return _type;
-  }
-
-  Node(int i, bool nullable = false)
-  : _type(i)
-  , nullable(nullable)
-  {}
-
-  ~Node(){}
-};
-
-
 }
 
 #endif

@@ -22,7 +22,7 @@ template<typename T, typename... Args>
 auto make_node(Args&&... args) -> std::shared_ptr<node_t>;
 
 
-class accept_t : public Node
+class accept_t
 {
   std::pair<int, std::string> value;
 
@@ -33,28 +33,32 @@ public:
   auto operator()(std::vector<std::unique_ptr<S_node>>& res) -> void;
 
   accept_t(const std::pair<int, std::string>& value)
-  : Node(-6, true)
-  , value(value)
+  : value(value)
   {}
 
   ~accept_t(){}
 };
 
 
-class token_t : public Node
+class token_t
 {
 public:
-
+  int _type;
   auto operator()(std::vector<std::unique_ptr<S_node>>& res) -> void;
 
   auto deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<node_t>;
 
   auto null() -> bool;
 
+  auto type() -> int
+  {
+    return _type;
+  }
+
   auto str(std::string& s) -> void;
 
   token_t(const int i)
-  : Node(i, i == 1)
+  : _type(i)
   {}
 
   ~token_t(){}
@@ -64,7 +68,7 @@ public:
 /*
 *  Delayed-evaluation derivative
 */
-class node_expr : public Node
+class node_expr
 {
   std::shared_ptr<node_t> left;
   std::shared_ptr<node_t> obj;
@@ -85,8 +89,7 @@ public:
   auto str(std::string& s) -> void;
 
   node_expr(const std::shared_ptr<node_t>& left, const std::pair<int, std::string>& i)
-  : Node(-5)
-  , left(left)
+  : left(left)
   , wrt(i)
   , resolved(false)
   , culled(false)
@@ -96,10 +99,11 @@ public:
 };
 
 
-class nonterm_t : public Node
+class nonterm_t
 {
   bool done;
   bool culled;
+  bool nullable;
 
   std::pair<std::pair<int, std::string>, std::shared_ptr<node_t>> last;
   std::string name;
@@ -117,17 +121,17 @@ public:
   auto str(std::string& s) -> void;
 
   nonterm_t(const std::string& name = "L")
-  : Node(-4)
-  , done(false)
+  : done(false)
   , culled(false)
+  , nullable(false)
   , name(name)
   {}
 
   nonterm_t(const std::shared_ptr<node_t>& l, const std::string& name = "L")
-  : Node(-4)
-  , left(l)
+  : left(l)
   , done(false)
   , culled(false)
+  , nullable(false)
   , name(name)
   {}
 
@@ -135,7 +139,7 @@ public:
 };
 
 
-class or_t : public Node
+class or_t
 {
   std::shared_ptr<node_t> left;
   std::shared_ptr<node_t> right;
@@ -152,8 +156,7 @@ public:
 
   or_t(const std::shared_ptr<node_t>& l,
        const std::shared_ptr<node_t>& r)
-  : Node(-2)
-  , left(l)
+  : left(l)
   , right(r)
   {}
 
@@ -161,7 +164,7 @@ public:
 };
 
 
-class cat_t : public Node
+class cat_t
 {
   std::shared_ptr<node_t> left;
   std::shared_ptr<node_t> right;
@@ -178,8 +181,7 @@ public:
 
   cat_t(const std::shared_ptr<node_t>& l,
         const std::shared_ptr<node_t>& r)
-  : Node(-3)
-  , left(l)
+  : left(l)
   , right(r)
   {}
 
@@ -187,7 +189,7 @@ public:
 };
 
 
-class star_t : public Node
+class star_t
 {
   std::shared_ptr<node_t> left;
 
@@ -202,21 +204,20 @@ public:
   auto str(std::string& s) -> void;
 
   star_t(const std::shared_ptr<node_t>& n)
-  : Node(-1, true)
-  , left(n)
+  : left(n)
   {}
 
   ~star_t(){}
 };
 
 
+auto empty() -> std::shared_ptr<node_t>;
+
 template<typename T, typename... Args>
 auto make_node(Args&&... args) -> std::shared_ptr<node_t>
 {
   return std::make_shared<node_t>(new T(args...), get_tag<T>().tag);
 }
-
-auto empty() -> std::shared_ptr<node_t>;
 
 template<typename T, typename Arg, typename Args2>
 auto make_nodes(Arg&& arg, Args2&& arg2) -> std::shared_ptr<node_t>
