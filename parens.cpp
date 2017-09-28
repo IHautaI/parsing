@@ -13,10 +13,12 @@ int main(int argc, char* argv[])
   auto inner = make_nodes<cat_t>(lang, left_p, lang, right_p);
   auto top = make_node<or_t>(inner, eps);
 
-  lang->as<nonterm_t>().left = top;
+  lang->as<nonterm_t>()->left = top;
   // L = L '(' L ')' | e
 
-  std::cout << "\n";
+  std::string s;
+  lang->str(s);
+  std::cout << "\n" << s << "\n\n";
 
   auto uno = std::make_pair(2, "(");
   auto dos = std::make_pair(3, ")");

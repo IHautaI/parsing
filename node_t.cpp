@@ -68,22 +68,22 @@ namespace lang {
     switch(tag)
     {
       case tag_t::Expr:
-        return static_cast<node_expr*>(node.get())->deriv(i);
+        return as<node_expr>()->deriv(i);
         break;
       case tag_t::Token:
-        return static_cast<token_t*>(node.get())->deriv(i);
+        return as<token_t>()->deriv(i);
         break;
       case tag_t::And:
-        return static_cast<cat_t*>(node.get())->deriv(i);
+        return as<cat_t>()->deriv(i);
         break;
       case tag_t::Or:
-        return static_cast<or_t*>(node.get())->deriv(i);
+        return as<or_t>()->deriv(i);
         break;
       case tag_t::Star:
-        return static_cast<star_t*>(node.get())->deriv(i);
+        return as<star_t>()->deriv(i);
         break;
       case tag_t::NonTerm:
-        return static_cast<nonterm_t*>(node.get())->deriv(i);
+        return as<nonterm_t>()->deriv(i);
         break;
       case tag_t::Accept:
         return empty();
@@ -99,22 +99,22 @@ namespace lang {
     switch(tag)
     {
       case tag_t::Expr:
-        return static_cast<node_expr*>(node.get())->null();
+        return as<node_expr>()->null();
         break;
       case tag_t::Token:
-        return static_cast<token_t*>(node.get())->null();
+        return as<token_t>()->null();
         break;
       case tag_t::And:
-        return static_cast<cat_t*>(node.get())->null();
+        return as<cat_t>()->null();
         break;
       case tag_t::Or:
-        return static_cast<or_t*>(node.get())->null();
+        return as<or_t>()->null();
         break;
       case tag_t::Star:
         return true;
         break;
       case tag_t::NonTerm:
-        return static_cast<nonterm_t*>(node.get())->null();
+        return as<nonterm_t>()->null();
         break;
       case tag_t::Accept:
         return true;
@@ -130,25 +130,25 @@ namespace lang {
     switch(tag)
     {
       case tag_t::Expr:
-        return static_cast<node_expr*>(node.get())->type();
+        return -5;
         break;
       case tag_t::Token:
-        return static_cast<token_t*>(node.get())->type();
+        return as<token_t>()->type();
         break;
       case tag_t::And:
-        return static_cast<cat_t*>(node.get())->type();
+        return -3;
         break;
       case tag_t::Or:
-        return static_cast<or_t*>(node.get())->type();
+        return -2;
         break;
       case tag_t::Star:
-        return static_cast<star_t*>(node.get())->type();
+        return -1;
         break;
       case tag_t::NonTerm:
-        return static_cast<nonterm_t*>(node.get())->type();
+        return -4;
         break;
       case tag_t::Accept:
-        return static_cast<accept_t*>(node.get())->type();
+        return -6;
         break;
       case tag_t::Null:
         return 0;
@@ -161,27 +161,28 @@ namespace lang {
     switch(tag)
     {
       case tag_t::Expr:
-        return static_cast<node_expr*>(node.get())->str(s);
+        return as<node_expr>()->str(s);
         break;
       case tag_t::Token:
-        return static_cast<token_t*>(node.get())->str(s);
+        return as<token_t>()->str(s);
         break;
       case tag_t::And:
-        return static_cast<cat_t*>(node.get())->str(s);
+        return as<cat_t>()->str(s);
         break;
       case tag_t::Or:
-        return static_cast<or_t*>(node.get())->str(s);
+        return as<or_t>()->str(s);
         break;
       case tag_t::Star:
-        return static_cast<star_t*>(node.get())->str(s);
+        return as<star_t>()->str(s);
         break;
       case tag_t::NonTerm:
-        return static_cast<nonterm_t*>(node.get())->str(s);
+        return as<nonterm_t>()->str(s);
         break;
       case tag_t::Accept:
-        return static_cast<accept_t*>(node.get())->str(s);
+        return as<accept_t>()->str(s);
         break;
       case tag_t::Null:
+        s += "(NULL)";
         return;
         break;
     }

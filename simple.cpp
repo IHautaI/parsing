@@ -78,7 +78,7 @@ auto nonterm_t::deriv(const std::pair<int, std::string>& i) -> std::shared_ptr<n
   if( last.first.first != i.first )
   {
     last = std::make_pair(i, make_node<nonterm_t>(
-               make_node<node_expr>(left, i)));
+               make_node<node_expr>(left, i), "D_" + i.second + name));
   }
 
   return last.second;
@@ -130,17 +130,19 @@ auto node_expr::eval() -> void
 
 auto accept_t::str(std::string& s) -> void
 {
-  s += "(eps ";
-  s += value.first;
-  s += " )";
+  s += "(eps " + std::to_string(value.first) + ")";
 }
 
 
 auto token_t::str(std::string& s) -> void
 {
-  s += "(tok ";
-  s +=  type();
-  s += " )";
+  if( type() != 1 )
+  {
+    s += "(tok " + std::to_string(type()) + ")";
+  } else
+  {
+    s += "(eps)";
+  }
 }
 
 auto node_expr::str(std::string& s) -> void
@@ -158,8 +160,13 @@ auto nonterm_t::str(std::string& s) -> void
   if( !culled )
   {
     culled = true;
+    s += "(" + name + " ";
     left->str(s);
+    s += ")";
     culled = false;
+  } else
+  {
+    s += name;
   }
 }
 

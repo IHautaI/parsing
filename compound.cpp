@@ -69,10 +69,17 @@ namespace lang {
 
     if( left->null() )
     {
-      return make_node<or_t>(a, make_node<node_expr>(right, i));
+      if( left->type() == -6 ) // eps x -> eps x'
+      {
+        return make_node<cat_t>(left, make_node<node_expr>(right, i));
+
+      } else // (a b) -> a' b | b'
+      {
+        return make_node<or_t>(a, make_node<node_expr>(right, i));
+      }
     }
 
-    return a;
+    return a; // a b -> a' b
   }
 
 
@@ -86,7 +93,8 @@ namespace lang {
 // --------------- NULL --------------------------
 
 
-  auto or_t::null() -> bool {
+  auto or_t::null() -> bool
+  {
     return left->null() || right->null();
   }
 
@@ -101,18 +109,15 @@ namespace lang {
 
 auto or_t::str(std::string& s) -> void
 {
-  s += "(or ";
   left->str(s);
+  s += " | ";
   right->str(s);
-  s += " )";
 }
 
 auto cat_t::str(std::string& s) -> void
 {
-  s += "(and ";
   left->str(s);
   right->str(s);
-  s += " )";
 }
 
 auto star_t::str(std::string& s) -> void

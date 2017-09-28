@@ -102,6 +102,7 @@ class nonterm_t : public Node
   bool culled;
 
   std::pair<std::pair<int, std::string>, std::shared_ptr<node_t>> last;
+  std::string name;
 
 public:
 
@@ -115,17 +116,19 @@ public:
 
   auto str(std::string& s) -> void;
 
-  nonterm_t()
+  nonterm_t(const std::string& name = "L")
   : Node(-4)
   , done(false)
   , culled(false)
+  , name(name)
   {}
 
-  nonterm_t(const std::shared_ptr<node_t>& l)
+  nonterm_t(const std::shared_ptr<node_t>& l, const std::string& name = "L")
   : Node(-4)
   , left(l)
   , done(false)
   , culled(false)
+  , name(name)
   {}
 
   ~nonterm_t(){}

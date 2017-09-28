@@ -70,9 +70,9 @@ public:
   auto str(std::string& s) -> void;
 
   template<typename T>
-  auto as() -> T&
+  auto as() -> T*
   {
-    return *static_cast<T*>(node.get());
+    return static_cast<T*>(node.get());
   }
 
   template<typename T>
